@@ -9,12 +9,10 @@ import { LibraryServices } from './Components/LibraryServices';
 export const HomePage = () => {
     return (
         <>
-            <Navbar />
             <ExploreTopBooks />
             <Carousel />
             <Heros />
             <LibraryServices />
-            <Footer />
         </>
     )
 } 
