@@ -3,6 +3,7 @@ import BookModel from '../../Models/BookModel';
 import { Container, Row, Col, Form, Button, Dropdown, DropdownButton, Spinner } from 'react-bootstrap';
 import { SearchBook } from './Components/SearchBook';
 import { Pagination } from '../Utils/Pagination';
+import { title } from 'process';
 
 export const SearchBooksPage = () => {
     const [books, setBooks] = useState<BookModel[]>([]);
@@ -13,23 +14,51 @@ export const SearchBooksPage = () => {
     const [totalAmountOfBooks, setTotalAmountOfBooks] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
     const [search, setSearch] = useState('');
-    const [searchUrl, setSearchUrl] = useState('');
     const [categorySelection, setCategorySelection] = useState('Book Category');
+    const [searchcategorySelection, setSearchCategorySelection] = useState('Search By');
+    const [searchFieldType, setSearchFieldType] = useState('All');
+    const [selectedCategory, setSelectedCategory] = useState('');
+
 
     useEffect(() => {
 
         const fetchBooks = async () => {
+            console.log("useEffect fired :", search, "category:", selectedCategory, "file:", searchFieldType,  "Page:", currentPage);
             const baseUrl: string = "http://localhost:8080/api/books";
 
+
             let url: string = ``;
+            const searchTrimmed = search.trim();
+            const categoryTrimmed = selectedCategory.trim().toLowerCase();
+            // if (searchUrl === '') {
+            //     url = `${baseUrl}?page=${currentPage - 1}&size=${booksPerPage}`;
 
-            if (searchUrl === '') {
+            // } else {
+            //     let searchWithPage = searchUrl.replace('<pageNumber>', `${currentPage - 1}`)
+            //     url = baseUrl + searchWithPage;
+            // }
+            
+            if (!searchTrimmed && !categoryTrimmed) {
                 url = `${baseUrl}?page=${currentPage - 1}&size=${booksPerPage}`;
-
-            } else {
-                let searchWithPage = searchUrl.replace('<pageNumber>', `${currentPage-1}`)
-                url = baseUrl + searchWithPage;
+            } else if (searchTrimmed && categoryTrimmed) {
+                if (searchFieldType === 'title') {
+                    url = `${baseUrl}/search/findByCategoryAndTitleContaining?category=${categoryTrimmed}&title=${searchTrimmed}&page=${currentPage -1}&size=${booksPerPage}`;
+                } else if (searchFieldType === 'author') {
+                    url = `${baseUrl}/search/findByCategoryAndAuthorContaining?category=${categoryTrimmed}&author=${searchTrimmed}&page=${currentPage - 1}&size=${booksPerPage}`;
+                }
+            } else if (categoryTrimmed) {
+                url = `${baseUrl}/search/findByCategory?category=${categoryTrimmed}&page=${currentPage -1 }&size=${booksPerPage}`;
+            } else if (searchTrimmed) {
+                if (searchFieldType === 'title') {
+                    url = `${baseUrl}/search/findByTitleContaining?title=${searchTrimmed}&page=${currentPage - 1}&size=${booksPerPage}`;
+                } else if (searchFieldType === 'author') {
+                    url = `${baseUrl}/search/findByAuthorContaining?author=${searchTrimmed}&page=${currentPage - 1}&size=${booksPerPage}`;
+                }
             }
+    
+            console.log("Final URL:", url);
+
+            
             const response = await fetch(url);
 
             if (!response.ok) {
@@ -42,6 +71,7 @@ export const SearchBooksPage = () => {
 
             setTotalAmountOfBooks(responseJson.page.totalElements);
             setTotalPages(responseJson.page.totalPages)
+
 
             const loadedBooks: BookModel[] = [];
 
@@ -57,7 +87,7 @@ export const SearchBooksPage = () => {
                     img: responseData[key].img,
                 });
             }
-
+            console.log("books", loadedBooks);
             setBooks(loadedBooks);
             setIsLoading(false);
         };
@@ -66,7 +96,7 @@ export const SearchBooksPage = () => {
             setIsLoading(false);
             setHttpError(error.message);
         })
-    }, [currentPage, searchUrl])
+    }, [currentPage,search, categorySelection, searchFieldType])
 
     if (isLoading) {
         return (
@@ -85,32 +115,43 @@ export const SearchBooksPage = () => {
             </div>
         )
     }
+    // we are uisng value in url brecause setsate is async and so is api call
+    //…the searchUrl is being set before search actually updates.
 
-    const searchHandleChange = () => {
+    const searchHandleChange = (value: string) => {
+        setSearch(value);
+        console.log("value", search)
+        console.log("fiels", searchFieldType)
         setCurrentPage(1);
-        if (search === '') {
-            setSearchUrl('');
-        } else {
-            setSearchUrl(`/search/findByTitleContaining?title=${search}&page=<pageNumber>&size=${booksPerPage}`)
-        }
+        // if (value.trim() === '') {
+        //     setSearchUrl('');
+        // }else {
+        //     if (searchFieldType === 'title') {
+        //         console.log("hi title")
+        //         setSearchUrl(`/search/findByTitleContaining?title=${value}&page=<pageNumber>&size=${booksPerPage}`);
+        //     } else if (searchFieldType === 'author') {
+        //         console.log("hi author")
+        //         setSearchUrl(`/search/findByAuthorContaining?author=${value}&page=<pageNumber>&size=${booksPerPage}`);
+        //     }
+        // } 
+        // else {
+        //     setSearchUrl(`/search/findByTitleContaining?title=${value}&page=<pageNumber>&size=${booksPerPage}`)
+        // }
     }
 
     const categoryField = (value: string) => {
         setCurrentPage(1);
-        if (
-            value.toLowerCase() === 'fe' ||
-            value.toLowerCase() === 'be' ||
-            value.toLowerCase() === 'data' ||
-            value.toLowerCase() === 'devops'
-        ) {
-            setCategorySelection(value);
-            setSearchUrl(`/search/findByCategory?category=${value}&page=<pageNumber>&size=${booksPerPage}`)
-        } else {
-            setCategorySelection('All');
-            setSearchUrl(`?page=<pageNumber>&size=${booksPerPage}`)
-        }
+        console.log("filed act", value, "seach", search)
+        setSelectedCategory(value);
+        setCategorySelection(value);
 
-        setCategorySelection('Book Category')
+    }
+
+    const searchField = (value: string) => {
+        setCurrentPage(1);
+        setSearch('');
+        setSearchFieldType(value.toLowerCase());
+        setSearchCategorySelection("Searching by " + value);
     }
 
     const indexOfLastBook: number = currentPage * booksPerPage;
@@ -126,17 +167,29 @@ export const SearchBooksPage = () => {
             <div>
 
                 <Row className='mt-5'>
-                    <Col md={6}>
-                        <Form className='d-flex'>
+                    <Col md={2}>
+                        <DropdownButton
+                            id='dropdown-basic-button'
+                            title={searchcategorySelection}
+                            variant='secondary'
+                        >
+                            <Dropdown.Item onClick={() => searchField('All')}>All</Dropdown.Item>
+                            <Dropdown.Item onClick={() => searchField('Title')}>Title</Dropdown.Item>
+                            <Dropdown.Item onClick={() => searchField('Author')}>Author</Dropdown.Item>
+                        </DropdownButton>
+                    </Col>
+                    <Col md={4}>
+                        <Form>
                             <Form.Control
                                 type='search'
-                                placeholder='Search'
+                                placeholder={`Search by ${searchFieldType.charAt(0).toUpperCase() + searchFieldType.slice(1)}`}
                                 className='me-2'
-                                onChange={e => setSearch(e.target.value)}
+                                value={search}
+                                onChange={e => searchHandleChange(e.target.value)}
                             />
-                            <Button variant='outline-success' onClick={searchHandleChange}>
+                            {/* <Button variant='outline-success' onClick={searchHandleChange}>
                                 Search
-                            </Button>
+                            </Button> */}
                         </Form>
                     </Col>
                     <Col md={4}>
