@@ -29,6 +29,7 @@ export const SearchBooksPage = () => {
 
             let url: string = ``;
             const searchTrimmed = search.trim();
+            console.log("st", searchTrimmed, !searchTrimmed)
             const categoryTrimmed = selectedCategory.trim().toLowerCase();
             // if (searchUrl === '') {
             //     url = `${baseUrl}?page=${currentPage - 1}&size=${booksPerPage}`;
@@ -54,12 +55,17 @@ export const SearchBooksPage = () => {
                 } else if (searchFieldType === 'author') {
                     url = `${baseUrl}/search/findByAuthorContaining?author=${searchTrimmed}&page=${currentPage - 1}&size=${booksPerPage}`;
                 }
+                else {
+                    url = `${baseUrl}/search/findByTitleOrAuthorContaining?search=${searchTrimmed}&page=${currentPage - 1}&size=${booksPerPage}`;
+                }
             }
+
     
             console.log("Final URL:", url);
 
             
             const response = await fetch(url);
+            console.log(response)
 
             if (!response.ok) {
                 throw new Error('Something went wrong!');
@@ -87,7 +93,7 @@ export const SearchBooksPage = () => {
                     img: responseData[key].img,
                 });
             }
-            console.log("books", loadedBooks);
+            // console.log("books", loadedBooks);
             setBooks(loadedBooks);
             setIsLoading(false);
         };
