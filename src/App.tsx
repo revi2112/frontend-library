@@ -6,6 +6,7 @@ import { SearchBooksPage } from './Layouts/SearchBookPage/SearchBookPage';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { Navbar } from './Layouts/NavbarAndFooter/Navbar';
 import { Footer } from './Layouts/HomePage/Components/Footer';
+import { BookCheckoutPage } from './Layouts/BookCheckoutPage/BookCheckoutPage';
 // / home /search home and search
 // /search with switch taks / first matching route
 function App() {
@@ -23,6 +24,9 @@ function App() {
         </Route>
         <Route path='/search'>
           <SearchBooksPage />
+        </Route>
+        <Route path='/checkout/:bookId'>
+          <BookCheckoutPage />
         </Route>
       </Switch>
       </div>
