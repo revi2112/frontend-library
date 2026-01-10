@@ -76,15 +76,15 @@ export const BookCheckoutPage = () => {
 
             for(const key in responseData){
                 loadedReviews.push({
-                    id: responseJsonReviews[key].id,
-                    userEmail: responseJsonReviews[key].userEmail,
-                    date: responseJsonReviews[key].date,
-                    rating: responseJsonReviews[key].rating,
-                    bookId: responseJsonReviews[key].bookId,
-                    reviewDescription: responseJsonReviews[key].reviewDescription
+                    id: responseData[key].id,
+                    userEmail: responseData[key].userEmail,
+                    date: responseData[key].date,
+                    rating: responseData[key].rating,
+                    bookId: responseData[key].bookId,
+                    reviewDescription: responseData[key].reviewDescription
                 });
 
-                stars = stars + responseJsonReviews[key].rating
+                stars = stars + responseData[key].rating
             }
 
 
@@ -139,7 +139,7 @@ export const BookCheckoutPage = () => {
                             <h2>{book?.title}</h2>
                             <h5 className="text-primary">{book?.author}</h5>
                             <p className="lead">{book?.description}</p>
-                            <StarsReview rating={4.5} size={32}/>
+                            <StarsReview rating={totalStars} size={32}/>
                         </div>
 
                     </div>
@@ -164,7 +164,7 @@ export const BookCheckoutPage = () => {
                     <div className="ml-2">
                     <h5 className="text-primary">{book?.author}</h5>
                             <p className="lead">{book?.description}</p>
-                            <StarsReview rating={4.5} size={32}/>
+                            <StarsReview rating={totalStars} size={32}/>
 
                     </div>
                 </div>
