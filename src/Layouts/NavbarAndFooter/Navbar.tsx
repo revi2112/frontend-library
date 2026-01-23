@@ -2,10 +2,11 @@ import { NavLink } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 
 export const Navbar = () => {
-  const { isAuthenticated, loginWithRedirect, logout, getIdTokenClaims } = useAuth0();
+  const { isAuthenticated, loginWithRedirect, logout, getIdTokenClaims, user} = useAuth0();
   const handleLogout = () => {
-    console.log("handleLogout");
-    logout({ logoutParams: { returnTo: window.location.origin } })
+    if (window.confirm("Are you sure you want to log out?")) {
+      logout({ logoutParams: { returnTo: window.location.origin } });
+    }
   };
 
   // const handleLogin =  () => {
@@ -39,17 +40,22 @@ export const Navbar = () => {
 
           </ul>
           <ul className='navbar-nav ms-auto'>
-          {!isAuthenticated ?
+            {!isAuthenticated ? (
               <li className='nav-item m-1'>
-                <button  className='btn btn-outline-light' onClick={handleLogin}>Sign in</button>
+                <button className='btn btn-outline-light' onClick={handleLogin}>Sign in</button>
               </li>
-              :
-              <li>
-                <button className='btn btn-outline-light' onClick={handleLogout}>Logout</button>
-              </li>
-            }
-             
-          </ul>
+            ) : (
+              // Use a React Fragment to wrap the welcome message and logout button
+              <>
+                <li className='nav-item m-1'>
+                  <span className='nav-link text-white'>Welcome, {user?.email?.split('@')[0]}</span>
+                </li>
+                <li className='nav-item m-1'>
+                  <button className='btn btn-outline-light' onClick={handleLogout}>Logout</button>
+                </li>
+              </>
+            )}
+            </ul>
         </div>
       </div>
     </nav>

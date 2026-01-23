@@ -36,7 +36,7 @@ const Auth0ProviderWithHistory = ({ children }: { children: React.ReactNode }) =
       clientId={auth0Config.clientId}
       authorizationParams={{
         redirect_uri: auth0Config.redirectUri,
-        audience: auth0Config.audience,
+        // audience: auth0Config.audience,
         scope: auth0Config.scope,
       }} 
        onRedirectCallback={onRedirectCallback}
@@ -63,9 +63,7 @@ function App() {
         <Route path='/home'>
           <HomePage />
         </Route>
-        <Route path='/search'>
-          <SearchBooksPage />
-        </Route>
+        <SecureRoute path='/search' component={SearchBooksPage} />
         <Route path='/checkout/:bookId'>
           <BookCheckoutPage />
         </Route>

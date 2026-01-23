@@ -1,4 +1,10 @@
+import { useAuth0 } from "@auth0/auth0-react";
+import { Link } from "react-router-dom";
+
 export const LibraryServices = () => {
+    const { isAuthenticated, loginWithRedirect } = useAuth0();
+
+
     return (
         // my-5 is verticla top and bottom margin , p-4 padding on all side
         // shodow makes it come up
@@ -16,9 +22,16 @@ export const LibraryServices = () => {
                         send our library admin's a personal message!
                     </p>
                     <div className='d-grid gap-2 justify-content-md-start mb-4 mb-lg-3'>
-                        <a className='btn main-color btn-lg text-white' href='#'>
-                            Sign up
-                        </a>
+                        {!isAuthenticated ?
+                            <button className='btn main-color btn-lg text-white' onClick={() => loginWithRedirect()}>
+                                Sign up
+                            </button>
+                            :
+                            <Link to='/messages' type='button' className='btn main-color btn-lg px-4 me-md-2 fw-bold text-white'>
+                                Library Services
+                            </Link>
+                        }
+
                     </div>
                 </div>
                 <div className='col-lg-4 col-md-6 col-6 offset-lg-1 shadow-lg lost-image'></div>

@@ -1,12 +1,20 @@
+import { useAuth0 } from "@auth0/auth0-react";
+import { Link } from "react-router-dom";
+
 export const Heros = () => {
+    const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
+    // If this is true, Auth0 hasn't finished the handshake yet
+    if (isLoading) {
+        return (
+            <div className='container m-5 d-flex justify-content-center'>
+                <div className="spinner-border text-primary" role="status"></div>
+            </div>
+        );
+    }
     return (
         <div>
             <div className='d-none d-lg-block'>
-                {/* 
-                d-none by default d-lg-block display in large screen g-0 is grid layout left right
-                
-                */}
-                <div className='row g-0'>
+                <div className='row g-0 mt-5'>
                     <div className='col-sm-6 col-md-6'>
                         <div className='col-image-left'></div>
                     </div>
@@ -18,7 +26,16 @@ export const Heros = () => {
                                 Whether it is to learn a new skill or grow within one,
                                 we will be able to provide the top content for you!
                             </p>
-                            <a className='btn main-color btn-lg text-white' href='#'>Sign up</a>
+                            {isAuthenticated ? (
+                                <Link type='button' className='btn main-color btn-lg text-white' to='/search'>
+                                    Explore top books
+                                </Link>
+                            ) : (
+                                /* Call the hook function directly here to avoid state lag */
+                                <button className='btn main-color btn-lg text-white' onClick={() => loginWithRedirect()}>
+                                    Sign up / Login
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -54,7 +71,16 @@ export const Heros = () => {
                                 Whether it is to learn a new skill or grow within one,
                                 we will be able to provide the top content for you!
                             </p>
-                            <a className='btn main-color btn-lg text-white' href='#'>Sign up</a>
+                            {isAuthenticated ? (
+                                <Link type='button' className='btn main-color btn-lg text-white' to='/search'>
+                                    Explore top books
+                                </Link>
+                            ) : (
+                                /* Call the hook function directly here to avoid state lag */
+                                <button className='btn main-color btn-lg text-white' onClick={() => loginWithRedirect()}>
+                                    Sign up / Login
+                                </button>
+                            )}
                         </div>
                     </div>
                     <div className='m-2'>
