@@ -1,6 +1,21 @@
 import { NavLink } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export const Navbar = () => {
+  const { isAuthenticated, loginWithRedirect, logout, getIdTokenClaims } = useAuth0();
+  const handleLogout = () => {
+    console.log("handleLogout");
+    logout({ logoutParams: { returnTo: window.location.origin } })
+  };
+
+  // const handleLogin =  () => {
+  //    loginWithRedirect();
+  //   window.location.assign("/");
+  // };
+  const handleLogin = async () => {
+    await loginWithRedirect();
+  };
+  console.log("isAuthenticated: ", isAuthenticated);
 
   return (
     <nav className='navbar navbar-expand-lg navbar-dark main-color py-3'>
@@ -24,11 +39,16 @@ export const Navbar = () => {
 
           </ul>
           <ul className='navbar-nav ms-auto'>
+          {!isAuthenticated ?
               <li className='nav-item m-1'>
-                <a type='button' className='btn btn-outline-light' href='#'>
-                  Sign in
-                </a>
+                <button  className='btn btn-outline-light' onClick={handleLogin}>Sign in</button>
               </li>
+              :
+              <li>
+                <button className='btn btn-outline-light' onClick={handleLogout}>Logout</button>
+              </li>
+            }
+             
           </ul>
         </div>
       </div>
